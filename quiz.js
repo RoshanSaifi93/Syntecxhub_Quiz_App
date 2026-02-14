@@ -1,3 +1,5 @@
+const progressText = document.getElementById("progressText");
+
 const quizData = [
   {
     question: "What does HTML stand for?",
@@ -74,6 +76,8 @@ function loadQuestion() {
   optionEl.innerHTML = "";
   scoreText.innerText = "";
 
+  progressText.innerText = `Question ${currentQuestion + 1} of ${quizData.length}`;
+
   const current = quizData[currentQuestion];
   questionEl.innerText = current.question;
 
@@ -103,21 +107,40 @@ nextBtn.addEventListener("click", () => {
     alert("Please select an option!");
     return;
   }
+  const correctAnswer = quizData[currentQuestion].answer;
+  const allOptions = document.querySelectorAll(".option label");
 
-  if (selected.value === quizData[currentQuestion].answer) {
+  allOptions.forEach((label) => {
+    const input = label.querySelector("input");
+
+    if (input.value === correctAnswer) {
+      label.classList.add("correct");
+    }
+
+    if (input.checked && input.value !== correctAnswer) {
+      label.classList.add("wrong");
+    }
+
+    label.classList.add("disabled");
+  });
+
+  if (selected.value === correctAnswer) {
     score++;
   }
 
-  currentQuestion++;
+  setTimeout(() => {
+    currentQuestion++;
 
-  if (currentQuestion < quizData.length) {
-    loadQuestion();
-  } else {
-    showResult();
-  }
+    if (currentQuestion < quizData.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }, 800);
 });
 
 function showResult() {
+  progressText.innerText = "";
   questionEl.innerText = "Quiz Completed 🎉";
   optionEl.innerHTML = "";
   scoreText.innerText = `Your Score: ${score} / ${quizData.length}`;
